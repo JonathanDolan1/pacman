@@ -25,9 +25,8 @@ function onInit() {
     <button onclick="onPlayGame()">Play Game</button>`
 }
 
-function onPlayGame(){
-    BG_MUSIC.currentTime = 0
-    BG_MUSIC.play()
+function onPlayGame() {
+    playSound(BG_MUSIC)
     clearInterval(gCherryInterval)
     clearInterval(gIntervalGhosts)
     gBoard = buildBoard()
@@ -37,7 +36,7 @@ function onPlayGame(){
     gGame.score = 0
     const elH2 = document.querySelector('h2')
     elH2.querySelector('span').innerText = 0
-    elH2.hidden=false
+    elH2.hidden = false
     gGame.isOn = true
     gFoodCount = countFood(gBoard) + 1
     gDeadGhosts = []
@@ -79,10 +78,7 @@ function renderBoard(board) {
     }
     const elContainer = document.querySelector('.board')
     elContainer.innerHTML = strHTML
-    for (i = 0; i < gGhosts.length; i++) {
-        var ghost = gGhosts[i]
-        renderCell(ghost.location, getGhostHTML(ghost))
-    }
+    renderGhosts()
     renderCell(gPacman.location, getPacmanHTML())
 }
 
@@ -97,16 +93,16 @@ function updateScore(diff) {
 
 }
 
-function winGame(){
-    VICTORY_SOUND.play()
-                    gElPlayAgainModal.querySelector('h3').innerText = 'Victory! 🥳'
-                    gameOver()
+function winGame() {
+    playSound(VICTORY_SOUND)
+    gElPlayAgainModal.querySelector('h3').innerText = 'Victory! 🥳'
+    gameOver()
 }
 
-function loseGame(){
+function loseGame() {
     gElPlayAgainModal.querySelector('h3').innerText = 'Game over 😭'
     BG_MUSIC.pause()
-    GAME_OVER_SOUND.play()
+    playSound(GAME_OVER_SOUND)
     gameOver()
 }
 
@@ -137,12 +133,17 @@ function addCherry() {
 }
 
 function getEmptyLocation(board) {
-    const res = []
+    const emptyLocations = []
     for (var i = 0; i < board.length; i++) {
         for (var j = 0; j < board[i].length; j++) {
-            if (board[i][j] === EMPTY) res.push({ i, j })
+            if (board[i][j] === EMPTY) emptyLocations.push({ i, j })
         }
     }
-    if (!res.length) return null
-    return res.splice(getRandomInt(0, res.length), 1)[0]
+    if (!emptyLocations.length) return null
+    return emptyLocations.splice(getRandomInt(0, emptyLocations.length), 1)[0]
+}
+
+function playSound(sound) {
+    sound.currentTime = 0
+    sound.play()
 }

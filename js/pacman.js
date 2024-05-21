@@ -15,9 +15,16 @@ function createPacman(board) {
             j: 6
         },
         isSuper: false,
-        direction: 'ArrowLeft'
+        degrees: 180
+        // direction: 'ArrowLeft'
     }
     board[gPacman.location.i][gPacman.location.j] = PACMAN
+}
+
+function eatFood(){
+    updateScore(1)
+    gFoodCount--
+    if (gFoodCount === 0) winGame()
 }
 
 function onMovePacman(ev) {
@@ -31,38 +38,24 @@ function onMovePacman(ev) {
             loseGame()
             return
         } else {
-            const ghost = getGhostAtLocation(nextLocation)
-            if (ghost.currCellContent === FOOD) {
-                ghost.currCellContent = EMPTY
-                updateScore(1)
-                gFoodCount--
-                if (gFoodCount === 0) winGame()
-            }
-            moveGhostToDeadGhosts(nextLocation)
-            GHOST_KILL_SOUND.play()
+            killGhost(nextLocation)
         }
     }
-
     if (nextCell === FOOD) {
-        updateScore(1)
-        gFoodCount--
-        EATING_SOUND.play()
-        if (gFoodCount === 0) {
-            winGame()
-        }
+        playSound(EATING_SOUND)
+        eatFood()
     } else if (nextCell === SUPER_FOOD) {
         if (gPacman.isSuper) return
-        EATING_SUPER_FOOD_SOUND.play()
-        gPacman.isSuper = true
-        for (var i = 0 ; i<gGhosts.length; i++){
-            renderCell(gGhosts[i].location,getGhostHTML(gGhosts[i]))
-        }
+        playSound(EATING_SUPER_FOOD_SOUND)
+        gPacman.isSuper = true;
+        renderGhosts();
         setTimeout(()=>{
             gPacman.isSuper = false;
             if (gGame.isOn) reviveGhosts()
         }, 5000)
     } else if (nextCell === CHERRY) {
         updateScore(10)
+        EATING_CHERRY_SOUND.currentTime=0
         EATING_CHERRY_SOUND.play()
     }
     gBoard[gPacman.location.i][gPacman.location.j] = EMPTY
@@ -73,7 +66,7 @@ function onMovePacman(ev) {
 }
 
 function getPacmanHTML() {
-    return `<img src="img/pacman-${gPacman.direction}.jpeg"/>`
+    return `<img style="transform: rotate(${gPacman.degrees}deg)" src="img/pacman.gif"/>`
 }
 
 function getNextLocation(eventKeyboard) {
@@ -81,23 +74,24 @@ function getNextLocation(eventKeyboard) {
         i: gPacman.location.i,
         j: gPacman.location.j
     }
-    const currPacmanDirection = gPacman.direction
-    gPacman.direction = eventKeyboard.code
     switch (eventKeyboard.code) {
         case 'ArrowUp':
+            gPacman.degrees = -90
             nextLocation.i--
             break
-        case 'ArrowDown':
+            case 'ArrowDown':
+            gPacman.degrees = 90
             nextLocation.i++
             break
-        case 'ArrowLeft':
+            case 'ArrowLeft':
+            gPacman.degrees = 180
             nextLocation.j--
             break
-        case 'ArrowRight':
+            case 'ArrowRight':
+            gPacman.degrees = 0
             nextLocation.j++
             break
         default:
-            gPacman.direction = currPacmanDirection
             return null
     }
     renderCell(gPacman.location, getPacmanHTML())

@@ -35,31 +35,32 @@ function moveGhosts() {
 }
 
 function moveGhost(ghost) {
-    var moveDiff = getMoveDiff()
-    var nextLocation = {
-        i: ghost.location.i + moveDiff.i,
-        j: ghost.location.j + moveDiff.j
-    }
-    var nextCell = gBoard[nextLocation.i][nextLocation.j]
-    if (nextCell === WALL || nextCell === GHOST) {
-        renderCell(ghost.location, getGhostHTML(ghost))
-        return
-    }
-    if (nextCell === PACMAN) {
-        if (!gPacman.isSuper) {
-           loseGame()
-        } else {
-            moveGhostToDeadGhosts(ghost.location)
-            removeGhostFromCurrLoc(ghost)
-            GHOST_KILL_SOUND.play()
-            return
+    while (true) {
+        var moveDiff = getMoveDiff()
+        var nextLocation = {
+            i: ghost.location.i + moveDiff.i,
+            j: ghost.location.j + moveDiff.j
         }
+        var nextCell = gBoard[nextLocation.i][nextLocation.j]
+        if (nextCell === WALL || nextCell === GHOST) {
+            // renderCell(ghost.location, getGhostHTML(ghost))
+            continue
+        }
+        if (nextCell === PACMAN) {
+            if (!gPacman.isSuper) {
+                loseGame()
+            } else {
+                continue
+            }
+        }
+        gBoard[ghost.location.i][ghost.location.j] = ghost.currCellContent
+        renderCell(ghost.location, ghost.currCellContent)
+        ghost.location = nextLocation
+        ghost.currCellContent = nextCell
+        gBoard[ghost.location.i][ghost.location.j] = GHOST
+        renderCell(ghost.location, getGhostHTML(ghost))
+        break
     }
-    removeGhostFromCurrLoc(ghost)
-    ghost.location = nextLocation
-    ghost.currCellContent = nextCell
-    gBoard[ghost.location.i][ghost.location.j] = GHOST
-    renderCell(ghost.location, getGhostHTML(ghost))
 }
 
 function getMoveDiff() {
@@ -77,38 +78,34 @@ function getGhostHTML(ghost) {
     return `<span style="color: transparent; text-shadow: 0 0 0 ${ghostColor};">${GHOST}</span>`
 }
 
-function reviveGhosts(){
+function reviveGhosts() {
     const deadGhostsLength = gDeadGhosts.length
-    for (var i = 0 ; i < deadGhostsLength ; i ++){
+    for (var i = 0; i < deadGhostsLength; i++) {
         const ghost = gDeadGhosts.pop(1)
         gGhosts.push(ghost)
         renderCell(ghost.location, getGhostHTML(ghost))
+        if (ghost.location.i === gPacman.location.i && ghost.location.j === gPacman.location.j) loseGame()
     }
-    for (i = 0 ; i<gGhosts.length ; i++){
-        renderCell(gGhosts[i].location,getGhostHTML(gGhosts[i]))
-    }
+    renderGhosts()
 }
 
-function removeGhostFromCurrLoc(ghost){
-    gBoard[ghost.location.i][ghost.location.j] = ghost.currCellContent
-            renderCell(ghost.location, ghost.currCellContent)
-}
-
-function moveGhostToDeadGhosts(location) {
+function killGhost(location) {
     for (var i = 0; i < gGhosts.length; i++) {
-        if (gGhosts[i].location.i === location.i && gGhosts[i].location.j === location.j){
-            const deadGhost = gGhosts.splice(i, 1)[0]
-            gDeadGhosts.push(deadGhost)
+        if (gGhosts[i].location.i === location.i && gGhosts[i].location.j === location.j) {
+            const ghost = gGhosts.splice(i, 1)[0]
+            gDeadGhosts.push(ghost)
+            playSound(GHOST_KILL_SOUND)
+            if (ghost.currCellContent === FOOD) {
+                ghost.currCellContent = EMPTY
+                eatFood()
+            }
         }
     }
 }
 
-function getGhostAtLocation(location) {
+function renderGhosts() {
     for (var i = 0; i < gGhosts.length; i++) {
-        if (gGhosts[i].location.i === location.i && gGhosts[i].location.j === location.j){
-            const ghost = gGhosts[i]
-            return ghost
-        }
+        const ghost = gGhosts[i]
+        renderCell(ghost.location, getGhostHTML(ghost))
     }
-    return null
 }

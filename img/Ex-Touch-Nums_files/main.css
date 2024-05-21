@@ -1,0 +1,82 @@
+body {
+    text-align: center;
+}
+
+button {
+    margin-top: 5px;
+    margin-bottom: 25px;
+    padding: 2px;
+}
+
+button:hover{
+    cursor: pointer;
+}
+
+h3 {
+    visibility: hidden;
+    color: red;
+}
+
+.levels{
+    margin-inline: auto;
+    /* width: 200px; */
+    border: 4px solid black;
+    border-collapse: collapse;
+}
+
+.levels td {
+    border: 3px solid black;
+    background-color: rgb(101, 100, 100);
+    color: whitesmoke;
+    width: 100px;
+}
+
+.levels td:hover{
+    cursor: pointer;
+}
+
+.levels td.mark{
+    background-color: rgb(176, 7, 7);
+}
+
+.display div {
+    padding: 4px;
+    margin-inline: auto;
+    width: 200px;
+    font-size: 20px;
+    margin-block: 15px;
+    border: 3px solid black;
+    background-color: rgb(193, 193, 193);
+    color: rgb(34, 58, 131);
+}
+
+.board {
+    border: 2px solid black;
+    border-collapse: collapse;
+    margin-inline: auto;
+    height: 300px;
+    width: 300px;
+}
+
+.board td {
+    background-color: lightyellow;
+    font-size: 30px;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    transition: 0.5s;
+    border: dashed;
+}
+
+.board td:hover {
+    background-color: lightsalmon;
+    cursor: pointer;
+}
+
+.board td.done{
+    background-color: rgb(78, 255, 47);
+}
+
+h2 {
+    visibility: hidden;
+}
