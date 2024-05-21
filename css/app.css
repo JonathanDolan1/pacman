@@ -1,0 +1,27 @@
+body {
+  background-color: black;
+  color:white;
+  text-align: center;
+}
+
+.board-container {
+  margin: auto;
+}
+
+.cell {
+  font-size: 1.5em;
+  width: 2em;
+  height: 2em;
+}
+
+td {
+  font-size: 1.5em;
+}
+
+img {
+  height: 32px;
+}
+
+h1 {
+  color:yellow
+}
